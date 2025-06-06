@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Event - Tangent{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Create New Event</h5>
+                <form method="post" id="createEventForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Event Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="start_date" class="form-label">Start Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="end_date" class="form-label">End Date & Time</label>
+                                <input type="datetime-local" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="location_name" class="form-label">Location Name</label>
+                        <input type="text" class="form-control" id="location_name" name="location_name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Coordinates</label>
+                        <div class="row">
+                            <div class="col">
+                                <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude" readonly>
+                            </div>
+                            <div class="col">
+                                <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude" readonly>
+                            </div>
+                        </div>
+                        <div class="form-text">Your current location will be used as the event location</div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Event</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Get user's location if they allow it
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        });
+    }
+    
+    // Set minimum datetime to now
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    document.getElementById('start_date').min = now.toISOString().slice(0, 16);
+    document.getElementById('end_date').min = now.toISOString().slice(0, 16);
+    
+    // Ensure end date is after start date
+    document.getElementById('start_date').addEventListener('change', function() {
+        document.getElementById('end_date').min = this.value;
+    });
+</script>
+{% endblock %} 

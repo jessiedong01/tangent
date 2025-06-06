@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}Groups - Tangent{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Sidebar -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Group Types</h5>
+                <div class="list-group list-group-flush">
+                    <a href="?type=all" class="list-group-item list-group-item-action {% if not request.GET.type or request.GET.type == 'all' %}active{% endif %}">
+                        <i class="fas fa-globe"></i> All Groups
+                    </a>
+                    <a href="?type=PROXIMITY" class="list-group-item list-group-item-action {% if request.GET.type == 'PROXIMITY' %}active{% endif %}">
+                        <i class="fas fa-map-marker-alt"></i> Proximity-based
+                    </a>
+                    <a href="?type=EVENT" class="list-group-item list-group-item-action {% if request.GET.type == 'EVENT' %}active{% endif %}">
+                        <i class="fas fa-calendar"></i> Event-based
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'create_group' %}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Create Group
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h5 class="card-title mb-0">Groups</h5>
+                    <div class="input-group" style="width: 300px;">
+                        <input type="text" class="form-control" placeholder="Search groups..." id="searchInput">
+                        <button class="btn btn-outline-secondary" type="button">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                {% if groups %}
+                    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4" id="groupsContainer">
+                        {% for group in groups %}
+                        <div class="col">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ group.name }}</h5>
+                                    <p class="card-text">{{ group.description|truncatechars:100 }}</p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="badge bg-primary">
+                                            <i class="fas fa-users"></i> {{ group.groupmembership_set.count }} members
+                                        </span>
+                                        <span class="badge bg-secondary">
+                                            {% if group.group_type == 'PROXIMITY' %}
+                                                <i class="fas fa-map-marker-alt"></i> Proximity
+                                            {% else %}
+                                                <i class="fas fa-calendar"></i> Event
+                                            {% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <div class="d-grid">
+                                        <a href="#" class="btn btn-outline-primary">View Details</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <h5>No groups found</h5>
+                        <p class="text-muted">Create a new group or join an existing one to get started.</p>
+                        <a href="{% url 'create_group' %}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Group
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const groups = document.querySelectorAll('#groupsContainer .col');
+        
+        groups.forEach(group => {
+            const title = group.querySelector('.card-title').textContent.toLowerCase();
+            const description = group.querySelector('.card-text').textContent.toLowerCase();
+            
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                group.style.display = '';
+            } else {
+                group.style.display = 'none';
+            }
+        });
+    });
+</script>
+{% endblock %} 

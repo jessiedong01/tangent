@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Tangent{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Left Sidebar -->
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Quick Actions</h5>
+                <div class="d-grid gap-2">
+                    <a href="{% url 'create_group' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-users"></i> Create Group
+                    </a>
+                    <a href="{% url 'create_event' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-calendar-plus"></i> Create Event
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Your Groups</h5>
+                {% if groups %}
+                    <div class="list-group list-group-flush">
+                        {% for group in groups %}
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="fas fa-users"></i> {{ group.name }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">You haven't joined any groups yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Upcoming Events</h5>
+                {% if events %}
+                    {% for event in events %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                <i class="fas fa-calendar"></i> {{ event.start_date|date:"F j, Y" }}
+                            </h6>
+                            <h5 class="card-title">{{ event.name }}</h5>
+                            <p class="card-text">{{ event.description }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> {{ event.location.name }}
+                                </small>
+                                <a href="#" class="btn btn-sm btn-primary">View Details</a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No upcoming events.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Recommended Connections</h5>
+                {% if recommended_connections %}
+                    {% for connection in recommended_connections %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h6 class="card-title">{{ connection.user.username }}</h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Shared Interests: {{ connection.shared_interests|join:", " }}
+                                </small>
+                            </p>
+                            <button class="btn btn-sm btn-primary">Connect</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No recommended connections yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}Create Group - Tangent{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Create New Group</h5>
+                <form method="post" id="createGroupForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Group Name</label>
+                        <input type="text" class="form-control" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="group_type" class="form-label">Group Type</label>
+                        <select class="form-select" id="group_type" name="group_type" required>
+                            <option value="PROXIMITY">Proximity-based</option>
+                            <option value="EVENT">Event-based</option>
+                        </select>
+                    </div>
+                    
+                    <div id="proximityFields" class="mb-3">
+                        <div class="mb-3">
+                            <label for="radius" class="form-label">Radius (meters)</label>
+                            <input type="number" class="form-control" id="radius" name="radius" value="1000" min="100" max="10000">
+                            <div class="form-text">Maximum distance for group members (100m to 10km)</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Location</label>
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" class="form-control" id="latitude" name="latitude" placeholder="Latitude" readonly>
+                                </div>
+                                <div class="col">
+                                    <input type="text" class="form-control" id="longitude" name="longitude" placeholder="Longitude" readonly>
+                                </div>
+                            </div>
+                            <div class="form-text">Your current location will be used as the group's center</div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Group</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Get user's location if they allow it
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            document.getElementById('latitude').value = position.coords.latitude;
+            document.getElementById('longitude').value = position.coords.longitude;
+        });
+    }
+    
+    // Toggle proximity fields based on group type
+    document.getElementById('group_type').addEventListener('change', function() {
+        const proximityFields = document.getElementById('proximityFields');
+        if (this.value === 'PROXIMITY') {
+            proximityFields.style.display = 'block';
+        } else {
+            proximityFields.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %} 
